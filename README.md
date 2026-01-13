@@ -10,7 +10,7 @@ SalesMate is an LLM-based sales assistant that simulates a professional salesper
 
 - **Conversational AI**: Natural dialogue powered by OpenAI GPT models
 - **Personalized Recommendations**: Product suggestions based on user personas
-- **Product Catalog**: Browse 18+ electronics products across multiple categories
+- **Product Catalog**: Browse 50+ electronics products across multiple categories
 - **User Personas**: 4 distinct customer profiles with different preferences
 - **Conversation Logging**: Save and review conversation history
 - **Product Comparison**: Compare multiple products side-by-side
@@ -26,7 +26,7 @@ SalesMate is an LLM-based sales assistant that simulates a professional salesper
 
 1. **Clone the repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/FlameGreat-1/SalesMate
 cd salesmate
 ```
 
@@ -76,7 +76,7 @@ The system includes 4 pre-configured personas:
 
 ## Product Catalog
 
-18 electronics products across categories:
+50 electronics products across categories:
 - Smart TVs
 - Laptops
 - Smartphones
