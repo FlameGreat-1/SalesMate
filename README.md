@@ -1,6 +1,36 @@
 # SalesMate Docs
 
 
+**Deployment:** Railway (Frontend & Backend)  
+**Scale:** Currently handling 65 products (40+ attributes each) with architecture supporting 5,000+.
+
+
+## **ARCHITECTURE**
+
+┌─────────────────────────────────────────────────────────────────┐
+│                      USER BROWSER (Frontend)                    │
+│                    (Next.js React Application)                  │
+└────────────────────────────────┬────────────────────────────────┘
+                                 │ HTTP/REST API
+                                 │
+┌────────────────────────────────▼───────────────────────────────┐
+│                        BACKEND SERVER                          │
+│                    (FastAPI Python Application)                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ • Authentication & Authorization                         │  │
+│  │ • Conversation Management                                │  │
+│  │ • Intent Analysis (AI)                                   │  │
+│  │ • Product Search & Recommendation Engine                 │  │
+│  │ • LLM Integration (OpenAI/Gemini)                        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└────────┬───────────────────────┬─────────────────── ┬──────────┘ 
+         │                       │                    │
+    ┌────▼─────┐    ┌────────────▼────────┐  ┌────────▼────────┐
+    │ Supabase │    │  Pinecone Vector DB │  │  LLM Services   │
+    │PostgreSQL│    │ (Product Embeddings)│  │(OpenAI/Gemini)  │
+    └──────────┘    └─────────────────────┘  └─────────────────┘
+
+
 ## **The Technology Stack**
 
 ### **Core Infrastructure**
@@ -56,3 +86,53 @@ I implemented a proprietary context management flow that solves this tradeoff:
 6.  **Streaming:** Response flows to the user via SSE in real-time.
 
 
+## **DATA FLOW DIAGRAM**
+
+┌─────────────────────────────────────────────────────────────┐
+│                    FRONTEND (Browser)                       │
+│              User Types → Send Message                      │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+                   │ HTTP POST with JWT Token
+                   ▼
+┌──────────────────────────────────────────────────────────────┐
+│                  BACKEND API SERVER                          │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │ 1. Authenticate user (validate JWT token)              │  │
+│  │ 2. Store message in database                           │  │
+│  │ 3. Analyze intent (call LLM)                           │  │
+│  │ 4. Extract entities (products, categories, budget)     │  │
+│  │ 5. Search products (vector DB + traditional filters)   │  │
+│  │ 6. Rank recommendations (budget, preferences, scores)  │  │
+│  │ 7. Prepare context (history, products, user profile)   │  │
+│  │ 8. Generate AI response (call LLM)                     │  │
+│  │ 9. Stream response back to frontend                    │  │
+│  │ 10. Store assistant message in database                │  │
+│  └────────────────────────────────────────────────────────┘ │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+        ┌──────────┼──────────┐
+        │          │          │
+        ▼          ▼          ▼
+   ┌────────┐ ┌──────────┐ ┌──────────┐
+   │ Supabase│ │Pinecone │ │LLM APIs  │
+   │Database │ │Vector DB│ │(Gemini/  │
+   │(Postgres)│ │(Search)  │ │OpenAI) │
+   └────────┘ └──────────┘ └──────────┘
+        │          │          │
+        └──────────┼──────────┘
+                   │
+        ┌──────────▼────────── ┐
+        │ Stream Response Back │
+        │ to Frontend (SSE)    │
+        └───────────────────── ┘
+                   │
+                   │ Real-time streaming
+                   ▼
+   ┌──────────────────────────────┐
+   │  FRONTEND Display            │
+   │ ├─ AI response text          │
+   │ ├─ Product recommendations   │
+   │ ├─ Key specifications        │
+   │ └─ Interactive buttons       │
+   └──────────────────────────────┘
